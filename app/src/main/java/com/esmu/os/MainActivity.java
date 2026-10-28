@@ -54,14 +54,19 @@ public class MainActivity extends AppCompatActivity {
         s.setBuiltInZoomControls(false);
         s.setGeolocationEnabled(true);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        s.setCacheMode(WebSettings.LOAD_DEFAULT);
+        s.setCacheMode(WebSettings.LOAD_NO_CACHE); // Fix: No cache means it loads fresh every time
 
+        // Turn on debugging so we can see errors in Chrome if needed
+        WebView.setWebContentsDebuggingEnabled(true);
+
+        // Add the bridge
         web.addJavascriptInterface(new EsmuBridge(this), "Android");
 
         web.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onConsoleMessage(@NonNull ConsoleMessage m) {
-                android.util.Log.d("EsmuWeb", m.message() + " @" + m.sourceId() + ":" + m.lineNumber());
+                // Print JS errors to Android Logcat
+                android.util.Log.e("EsmuError", m.message() + " @ line " + m.lineNumber());
                 return true;
             }
 
@@ -89,8 +94,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            // FIX: Wait for the page to finish loading completely before injecting the bridge
             @Override
-            public void onPageStarted(WebView v, String url, android.graphics.Bitmap f) {
+            public void onPageFinished(WebView v, String url) {
                 injectShim(v);
             }
         });
@@ -101,19 +107,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void injectShim(WebView v) {
         String js =
-            "(function(){" +
+            "javascript:(function(){" +
                 "if(window.EsmuNative)return;" +
                 "window.EsmuNative={" +
-                    "postMessage:function(str){try{Android.postMessage(String(str))}catch(e){}}," +
+                    "postMessage:function(str){" +
+                        "try{Android.postMessage(String(str))}" +
+                        "catch(e){console.error('Bridge error:', e)}" +
+                    "}," +
                     "onmessage:null" +
                 "};" +
+                "console.log('Native bridge injected successfully');" +
             "})();";
         v.evaluateJavascript(js, null);
     }
 
     void replyToJs(long id, String json) {
-        String js = "(function(){try{if(window.EsmuNative&&window.EsmuNative.onmessage)" +
-                "window.EsmuNative.onmessage({data:" + jsString(json) + "})}catch(e){}})();";
+        String js = "javascript:(function(){try{if(window.EsmuNative&&window.EsmuNative.onmessage)" +
+                "window.EsmuNative.onmessage({data:" + jsString(json) + "})}catch(e){console.error('Reply error:', e)}})();";
         runOnUiThread(() -> web.evaluateJavascript(js, null));
     }
 
@@ -152,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         web.evaluateJavascript(
-            "(function(){try{return window.__esmuBack&&window.__esmuBack()?'1':'0'}catch(e){return '0'}})()",
+            "javascript:(function(){try{return window.__esmuBack&&window.__esmuBack()?'1':'0'}catch(e){return '0'}})()",
             value -> {
                 if (!"\"1\"".equals(value) && !"1".equals(value)) {
                     MainActivity.super.onBackPressed();
