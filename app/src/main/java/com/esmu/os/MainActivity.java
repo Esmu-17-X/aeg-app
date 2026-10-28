@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
@@ -54,18 +56,22 @@ public class MainActivity extends AppCompatActivity {
         s.setBuiltInZoomControls(false);
         s.setGeolocationEnabled(true);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        s.setCacheMode(WebSettings.LOAD_NO_CACHE); // Fix: No cache means it loads fresh every time
+        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        // Turn on debugging so we can see errors in Chrome if needed
-        WebView.setWebContentsDebuggingEnabled(true);
+        // FIX 1: Disable hardware acceleration to fix touch glitches
+        web.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-        // Add the bridge
+        // FIX 2: Force WebView to handle all touch events directly
+        web.setOnTouchListener((v, event) -> {
+            v.onTouchEvent(event);
+            return true;
+        });
+
         web.addJavascriptInterface(new EsmuBridge(this), "Android");
 
         web.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onConsoleMessage(@NonNull ConsoleMessage m) {
-                // Print JS errors to Android Logcat
                 android.util.Log.e("EsmuError", m.message() + " @ line " + m.lineNumber());
                 return true;
             }
@@ -94,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
-            // FIX: Wait for the page to finish loading completely before injecting the bridge
             @Override
             public void onPageFinished(WebView v, String url) {
                 injectShim(v);
@@ -116,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     "}," +
                     "onmessage:null" +
                 "};" +
-                "console.log('Native bridge injected successfully');" +
+                "document.body.style.touchAction='manipulation';" + // FIX 3: Force CSS touch
             "})();";
         v.evaluateJavascript(js, null);
     }
