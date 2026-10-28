@@ -2,124 +2,73 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#05070f">
 <title>Esmu OS</title>
 <style>
+/* FIX 1: Changed body to handle touches better */
 :root{--base:#05070f;--surface:#0a1022;--surface2:#131b36;--text:#e4f0ff;--muted:#8499c0;--line:rgba(120,190,255,.2);--accent:#22d3ee;--on-accent:#04121a;--danger:#ff5d7a;--acc-rgb:34,211,238;color-scheme:dark}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--base);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit;cursor:pointer}
-.hidden{display:none!important}
-#wall{position:fixed;inset:0;z-index:0;background:radial-gradient(60% 50% at 18% 14%,rgba(124,58,237,.55),transparent 70%),radial-gradient(50% 45% at 86% 24%,rgba(236,72,153,.38),transparent 70%),radial-gradient(70% 60% at 62% 96%,rgba(14,165,233,.38),transparent 70%),linear-gradient(180deg,#04050d,#0a0925 60%,#150b2e)}
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation;}
+html,body{height:100%;margin:0;background:var(--base);color:var(--text);font-family:system-ui,sans-serif;overflow:hidden;}
+button{font:inherit;color:inherit;cursor:pointer; border:none; background:none;}
+#wall{position:fixed;inset:0;z-index:0;background:radial-gradient(60% 50% at 18% 14%,rgba(124,58,237,.55),transparent 70%),linear-gradient(180deg,#04050d,#0a0925 60%,#150b2e)}
 #os{position:relative;z-index:1;height:100%;display:grid;grid-template-rows:auto 1fr}
-#bar{height:38px;display:flex;align-items:center;gap:12px;padding:0 14px;background:rgba(4,8,20,.66);backdrop-filter:blur(18px);border-bottom:1px solid rgba(var(--acc-rgb),.3);font-size:13px;font-weight:600;color:#fff}
-.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;font-size:12px}
-.dotmark{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,var(--accent) 55%,transparent 75%);box-shadow:0 0 12px var(--accent)}
+#bar{height:38px;display:flex;align-items:center;gap:12px;padding:0 14px;background:rgba(4,8,20,.66);backdrop-filter:blur(18px);border-bottom:1px solid rgba(var(--acc-rgb),.3);font-size:13px;color:#fff; z-index: 100;}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;text-transform:uppercase;font-size:12px}
+.dotmark{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
 .sp{flex:1}
-#ftitle{opacity:.78;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
-#bat{opacity:.85;font-size:12px}
 #clock{font-weight:600}
 #desk{position:relative;overflow:hidden}
 #home{position:absolute;inset:0;padding:22px}
-.widget{position:absolute;right:30px;top:22px;text-align:right;color:#fff;text-shadow:0 0 30px rgba(var(--acc-rgb),.6),0 2px 20px rgba(0,0,0,.6)}
-.widget .time{font-weight:700;font-size:clamp(46px,11vw,88px);line-height:.95;letter-spacing:.02em}
-.widget .date{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-top:8px;font-weight:500}
-.widget .meta{font-size:12px;margin-top:4px;opacity:.78;font-family:ui-monospace,monospace}
+.widget{position:absolute;right:30px;top:22px;text-align:right;color:#fff;}
+.widget .time{font-weight:700;font-size:clamp(46px,11vw,88px);line-height:.95;}
+.widget .date{font-size:12px;color:var(--accent);margin-top:8px;font-weight:500}
 #grid{display:flex;flex-direction:column;flex-wrap:wrap;gap:14px 8px;align-content:flex-start;height:calc(100% - 4px);width:220px}
-.app{display:flex;flex-direction:column;align-items:center;gap:6px;width:96px;padding:4px;border:0;border-radius:14px;background:none;color:#fff;font-size:12px;font-weight:500;text-shadow:0 1px 8px rgba(0,0,0,.55)}
-.app:hover .ic{transform:translateY(-2px)}
-.ic{width:56px;height:56px;border-radius:18px 6px 18px 6px;display:grid;place-items:center;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),inset 0 1px 0 rgba(255,255,255,.4),0 8px 20px rgba(0,0,0,.55),0 0 22px rgba(var(--acc-rgb),.18);transition:transform .15s;background-size:cover;background-position:center}
+.app{display:flex;flex-direction:column;align-items:center;gap:6px;width:96px;padding:4px;border-radius:14px;color:#fff;font-size:12px;}
+.app:active .ic{transform:scale(0.95)}
+.ic{width:56px;height:56px;border-radius:18px 6px 18px 6px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#5b4bdb,#2a1f78);transition:transform .15s}
 .ic svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.ic img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
 #wins{position:absolute;inset:0;z-index:5;pointer-events:none}
-#dock{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;display:flex;gap:8px;padding:8px 10px;border-radius:16px;background:rgba(4,8,20,.66);border:1px solid rgba(var(--acc-rgb),.35);backdrop-filter:blur(20px);box-shadow:0 0 36px rgba(var(--acc-rgb),.14),0 10px 30px rgba(0,0,0,.5);max-width:calc(100% - 24px);overflow-x:auto}
-#dock button{position:relative;width:48px;height:48px;padding:0;border:0;border-radius:14px 5px 14px 5px;background:none;flex:none}
+#dock{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;display:flex;gap:8px;padding:8px 10px;border-radius:16px;background:rgba(4,8,20,.66);border:1px solid rgba(var(--acc-rgb),.35); backdrop-filter:blur(20px); max-width:calc(100% - 24px); overflow-x:auto;}
+#dock button{width:48px;height:48px;padding:0;border-radius:14px 5px 14px 5px;}
 #dock .ic{width:48px;height:48px;border-radius:14px 5px 14px 5px}
 #dock .ic svg{width:24px;height:24px}
-#dock .run{position:absolute;bottom:-7px;left:50%;width:14px;height:3px;margin-left:-7px;border-radius:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);opacity:0}
-#dock button.running .run{opacity:.95}
-.win{position:absolute;display:flex;flex-direction:column;min-width:300px;min-height:200px;background:var(--surface);color:var(--text);border:1px solid rgba(var(--acc-rgb),.26);border-radius:10px;overflow:hidden;pointer-events:auto;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:pop .16s ease-out}
-.win.focused{border-color:rgba(var(--acc-rgb),.65);box-shadow:0 0 0 1px rgba(var(--acc-rgb),.22),0 0 38px rgba(var(--acc-rgb),.2),0 24px 60px rgba(0,0,0,.6)}
-.win.min{display:none}
+.win{position:absolute;display:flex;flex-direction:column;min-width:300px;background:var(--surface);color:var(--text);border:1px solid rgba(var(--acc-rgb),.26);border-radius:10px;overflow:hidden;pointer-events:auto;box-shadow:0 10px 30px rgba(0,0,0,.5); animation:pop .16s ease-out;}
 @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
-.tb{display:flex;align-items:center;gap:8px;height:42px;padding:0 8px 0 10px;background:linear-gradient(180deg,rgba(var(--acc-rgb),.16),rgba(var(--acc-rgb),.04)),var(--surface2);border-bottom:1px solid rgba(var(--acc-rgb),.3);user-select:none;touch-action:none;cursor:grab}
-.tic{width:22px;height:22px;border-radius:8px 3px 8px 3px;display:grid;place-items:center;color:#fff;flex:none}
-.tic svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.ttl{flex:1;min-width:0;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tb button{width:30px;height:30px;border:0;border-radius:8px;background:none;display:grid;place-items:center}
-.tb button:hover{background:rgba(var(--acc-rgb),.18)}
-.tb button.x:hover{background:var(--danger);color:#fff}
-.tb button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.tb{display:flex;align-items:center;gap:8px;height:42px;padding:0 8px 0 10px;background:var(--surface2);border-bottom:1px solid var(--line);}
+.tic{width:22px;height:22px;border-radius:8px 3px 8px 3px;display:grid;place-items:center;color:#fff;background:var(--accent)}
+.ttl{flex:1;font-size:11.5px;font-weight:700;text-transform:uppercase;}
+.tb button{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;}
 .wb{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;overflow:hidden}
 .ar{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-.rz{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;touch-action:none}
-.rz::after{content:"";position:absolute;right:5px;bottom:5px;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);opacity:.6}
-.btn{border:1px solid rgba(var(--acc-rgb),.32);background:var(--surface2);color:var(--text);padding:7px 12px;border-radius:7px;font-size:13px;font-weight:600}
-.btn:hover{background:rgba(var(--acc-rgb),.16)}
-.btn.pri{background:var(--accent);color:var(--on-accent);border-color:transparent;box-shadow:0 0 18px rgba(var(--acc-rgb),.4)}
-.btn.danger{background:var(--danger);color:#fff;border-color:transparent}
-.ib{width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:8px;background:none;color:var(--muted);flex:none}
-.ib:hover{background:var(--line);color:var(--text)}
-.ib svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.s-note{margin:0 0 12px;color:var(--muted);font-size:14px;line-height:1.5}
-.s-in{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);color:var(--text);font:inherit}
+.btn{border:1px solid rgba(var(--acc-rgb),.32);background:var(--surface2);color:var(--text);padding:7px 12px;border-radius:7px;font-size:13px;font-weight:600; margin: 4px;}
+.btn.pri{background:var(--accent);color:var(--on-accent);}
+.s-in{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);color:var(--text);font:inherit; margin-bottom: 8px;}
 .s-sec{padding:16px;border-bottom:1px solid var(--line)}
-.s-sec h3{margin:0 0 12px;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-left:3px solid var(--accent);padding-left:10px}
-.set{overflow:auto}
-.empty{padding:36px 20px;text-align:center;color:var(--muted);font-size:14px;line-height:1.5}
-.info{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px;margin:0}
-.info dt{color:var(--muted)}.info dd{margin:0;font-weight:500}
-.ph-perm{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.s-sec h3{margin:0 0 12px;font-size:12.5px;text-transform:uppercase;border-left:3px solid var(--accent);padding-left:10px}
+.empty{padding:36px 20px;text-align:center;color:var(--muted);font-size:14px;}
+.term{display:block;overflow:auto;background:#030610;color:#d6ebff;font:13.5px/1.5 monospace;padding:10px 12px; flex: 1;}
+.f-row{display:flex;align-items:center;border-bottom:1px solid var(--line);}
+.f-main{flex:1;padding:12px;text-align:left; color: var(--text);}
+.ph-perm{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 .ph-ok{color:#4ade80;font-weight:600}
 .ph-panel{flex:1;min-height:0;overflow:auto}
-.ph-top{flex:none;padding:8px;overflow-x:auto;border-bottom:1px solid var(--line)}
-.ph-top .seg{display:flex;width:max-content}
 .ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:14px 6px;padding:12px}
-.ph-app{width:auto;color:var(--text);text-shadow:none}
-.ph-app span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.25;text-align:center}
-.ph-video{display:block;width:100%;max-height:52vh;border-radius:10px;background:#000;object-fit:cover}
-.ph-shot{max-width:100%;max-height:60vh;margin-top:10px;border-radius:10px}
-.f-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line)}
-.f-path{flex:1;min-width:120px;font:500 13px ui-monospace,monospace;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chips{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;border-bottom:1px solid var(--line);flex:none}
-.chip{border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:500;white-space:nowrap;color:var(--text)}
-.chip:hover{background:var(--line)}
-.f-list{flex:1;min-height:0;overflow:auto;padding:4px 6px}
-.f-row{display:flex;align-items:center;gap:2px;border-radius:10px}
-.f-row:hover{background:var(--surface2)}
-.f-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;background:none;text-align:left;border-radius:10px;color:var(--text)}
-.f-ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none;color:#fff}
-.f-ic svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.f-nm{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.f-mt{font-size:12px;color:var(--muted);flex:none}
-.seg{display:inline-flex;gap:2px;padding:3px;background:var(--surface2);border:1px solid rgba(var(--acc-rgb),.3);border-radius:11px}
-.seg button{border:0;background:none;color:var(--muted);padding:6px 13px;border-radius:8px;font-size:13px;font-weight:600}
-.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.ph-video{display:block;width:100%;max-height:52vh;background:#000;object-fit:cover}
+.ph-shot{max-width:100%;margin-top:10px;}
+.f-path{flex:1;font:500 13px monospace;color:var(--muted); overflow: hidden;}
+.chip{border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:5px 12px;font-size:12.5px; color: var(--text); margin: 4px;}
+.seg{display:inline-flex;gap:2px;padding:3px;background:var(--surface2);border-radius:11px}
+.seg button{padding:6px 13px;border-radius:8px;font-size:13px;font-weight:600; color: var(--text)}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.2)}
 #modal{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;background:rgba(10,6,24,.5);backdrop-filter:blur(3px)}
-.dlg{width:min(380px,100%);padding:20px;border-radius:16px;background:var(--surface);color:var(--text);box-shadow:0 0 40px rgba(var(--acc-rgb),.18),0 20px 50px rgba(0,0,0,.4);border:1px solid rgba(var(--acc-rgb),.4)}
-.dlg h2{margin:0 0 6px;font-size:16px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-.dlg p{margin:0 0 12px;color:var(--muted);font-size:14px;line-height:1.5;white-space:pre-line}
-.dlg-in{width:100%;margin:6px 0 4px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);color:var(--text);font:inherit}
-.dlg-act{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-#toast{position:fixed;left:50%;bottom:100px;z-index:200;max-width:calc(100% - 32px);padding:10px 16px;border-radius:12px;background:#17122c;color:#fff;font-size:14px;opacity:0;transform:translate(-50%,10px);pointer-events:none;transition:opacity .2s,transform .2s}
+.dlg{width:min(380px,100%);padding:20px;border-radius:16px;background:var(--surface);color:var(--text);border:1px solid var(--accent)}
+#toast{position:fixed;left:50%;bottom:100px;z-index:200;padding:10px 16px;border-radius:12px;background:#17122c;color:#fff;font-size:14px;opacity:0;transform:translate(-50%,10px);pointer-events:none;transition:all .2s}
 #toast.on{opacity:1;transform:translate(-50%,0)}
-#boot{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#02030a;color:#bfe6ff;transition:opacity .35s;cursor:pointer}
+#boot{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#02030a;color:#bfe6ff;transition:opacity .35s}
 #boot.done{opacity:0}
-#bootlog{position:absolute;left:18px;top:18px;max-width:calc(100% - 36px);margin:0;font:12px/1.6 ui-monospace,monospace;color:rgba(var(--acc-rgb),.9);white-space:pre-wrap}
-#logo{text-align:center;position:relative}
+#logo{text-align:center;}
 #logo .mark{width:84px;height:84px;margin:0 auto 18px;border-radius:50%;background:radial-gradient(circle at 36% 34%,#fff,var(--accent) 40%,transparent 72%)}
-#logo h1{margin:0;font-size:40px;letter-spacing:.32em;margin-right:-.32em;color:#fff;text-shadow:0 0 24px rgba(var(--acc-rgb),.7)}
-#logo p{margin:8px 0 0;font:500 12px ui-monospace,monospace;letter-spacing:.34em;color:var(--accent)}
-.t-key{color:var(--accent)}.t-dir{color:#5ad0ff;font-weight:600}.t-pkg{color:#6ee7b7}.t-cmd{color:#fff}.t-err{color:#ff8da1}.t-dim{color:#9a93bd}
-.term{display:block;overflow:auto;background:#030610;color:#d6ebff;font:13.5px/1.5 ui-monospace,monospace;padding:10px 12px;box-shadow:inset 0 0 40px rgba(var(--acc-rgb),.08)}
-.t-out{white-space:pre-wrap;word-break:break-word}
-.t-row{display:flex;flex-wrap:wrap;align-items:baseline}
-.t-ps{color:var(--accent);white-space:pre}
-.t-in{flex:1 1 8ch;min-width:0;background:none;border:0;outline:0;color:inherit;font:inherit;padding:0;caret-color:var(--accent)}
-.n-ta{flex:1;min-height:0;width:100%;border:0;outline:0;resize:none;background:var(--surface);color:var(--text);padding:14px 16px;font:16px/1.65 system-ui,sans-serif}
-.n-bar{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);flex:none}
-.n-path{flex:1;min-width:0;font:500 12.5px ui-monospace,monospace;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -130,18 +79,13 @@ button{font:inherit;color:inherit;cursor:pointer}
     <span class="brand"><i class="dotmark"></i>Esmu</span>
     <span id="ftitle"></span>
     <span class="sp"></span>
-    <span id="bat" hidden></span>
     <span id="clock"></span>
-    <button id="sysbtn" aria-label="Settings" style="width:28px;height:28px;border:0;border-radius:8px;background:none;color:#fff;display:grid;place-items:center">
-      <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.4"/><circle cx="15" cy="17" r="2.4"/></svg>
-    </button>
   </header>
   <main id="desk">
     <section id="home">
       <div class="widget">
         <div id="w-time" class="time"></div>
         <div id="w-date" class="date"></div>
-        <div id="w-meta" class="meta"></div>
       </div>
       <nav id="grid"></nav>
     </section>
@@ -149,14 +93,11 @@ button{font:inherit;color:inherit;cursor:pointer}
     <nav id="dock"></nav>
   </main>
 </div>
-
 <div id="modal" hidden></div>
 <div id="toast"></div>
 
 <div id="boot" hidden>
-  <pre id="bootlog"></pre>
   <div id="logo"><div class="mark"></div><h1>ESMU</h1><p>ORBITAL OS 1.0</p></div>
-  <p style="position:absolute;bottom:22px;font-size:12px;color:#6d6590;margin:0">Tap to skip</p>
 </div>
 
 <script>
@@ -186,7 +127,6 @@ const store = {
   del(k) { try { localStorage.removeItem(k); } catch (e) {} }
 };
 
-/* ---------- native bridge ---------- */
 const NATIVE = !!(window.EsmuNative && typeof window.EsmuNative.postMessage === 'function');
 const nat = {
   pending: new Map(), seq: 0,
@@ -204,7 +144,6 @@ if (NATIVE) window.EsmuNative.onmessage = ev => {
   try { const m = JSON.parse(ev.data), p = nat.pending.get(m.id); if (!p) return; nat.pending.delete(m.id); if (m.error) p.reject(new Error(m.error)); else p.resolve(m.result); } catch (e) {}
 };
 
-/* ---------- toast + dialog ---------- */
 function toast(msg) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('on');
   clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2400);
@@ -212,44 +151,30 @@ function toast(msg) {
 function dlg(o) {
   return new Promise(resolve => {
     const m = $('#modal'); m.hidden = false;
-    const input = o.input ? h('input', { class: 'dlg-in', type: 'text', value: o.value || '', 'aria-label': o.title }) : null;
+    const input = o.input ? h('input', { class: 's-in', type: 'text', value: o.value || '' }) : null;
     const done = v => { m.hidden = true; m.replaceChildren(); resolve(v); };
     const ok = h('button', { class: 'btn ' + (o.danger ? 'danger' : 'pri'), onclick: () => done(input ? (input.value.trim() || null) : true) }, o.ok || 'OK');
     const cancel = h('button', { class: 'btn', onclick: () => done(input ? null : false) }, 'Cancel');
-    m.replaceChildren(h('div', { class: 'dlg', role: 'dialog' },
-      h('h2', null, o.title), o.text ? h('p', null, o.text) : null, input, h('div', { class: 'dlg-act' }, cancel, ok)));
-    (input || ok).focus(); if (input) input.select();
+    m.replaceChildren(h('div', { class: 'dlg' }, h('h2', null, o.title), o.text ? h('p', null, o.text) : null, input, h('div', { class: 'dlg-act', style: 'display:flex;gap:8px;justify-content:flex-end' }, cancel, ok)));
   });
 }
 
-/* ---------- app definitions ---------- */
-const GLYPH = {
-  terminal: '<polyline points="5 8 10 12 5 16"/><line x1="12" y1="17" x2="19" y2="17"/>',
-  files: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
-  notes: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><line x1="9" y1="13" x2="16" y2="13"/>',
-  calc: '<rect x="5" y="3" width="14" height="18" rx="2"/><line x1="8" y1="7.5" x2="16" y2="7.5"/>',
-  clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>',
-  monitor: '<polyline points="3 13 7 13 9.5 6 13 18 15.5 11 21 11"/>',
-  settings: '<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.4"/><circle cx="15" cy="17" r="2.4"/>',
-  store: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
-  music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
-  phone: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'
-};
-const svgOf = k => '<svg viewBox="0 0 24 24" aria-hidden="true">' + GLYPH[k] + '</svg>';
 const APPS = {
-  terminal: { name: 'Terminal', grad: 'linear-gradient(145deg,#5b4bdb,#2a1f78)', size: [660, 420], fav: 1 },
-  files: { name: 'Files', grad: 'linear-gradient(145deg,#f5a524,#d97706)', size: [560, 440], fav: 1 },
-  notes: { name: 'Notes', grad: 'linear-gradient(145deg,#34d399,#0f9f78)', size: [520, 440], fav: 1 },
-  calc: { name: 'Calculator', grad: 'linear-gradient(145deg,#fb7185,#e11d48)', size: [330, 500] },
-  clock: { name: 'Clock', grad: 'linear-gradient(145deg,#38bdf8,#0369a1)', size: [420, 520] },
-  monitor: { name: 'Monitor', grad: 'linear-gradient(145deg,#a78bfa,#6d28d9)', size: [520, 470] },
-  settings: { name: 'Settings', grad: 'linear-gradient(145deg,#94a3b8,#475569)', size: [500, 520], fav: 1 },
-  store: { name: 'Store', grad: 'linear-gradient(145deg,#2dd4bf,#0f766e)', size: [500, 540] },
-  music: { name: 'Music', grad: 'linear-gradient(145deg,#8b5cf6,#5b21b6)', size: [520, 620], fav: 1 },
-  phone: { name: 'Phone', grad: 'linear-gradient(145deg,#34d399,#0ea5e9)', size: [580, 640], fav: 1 }
+  terminal: { name: 'Terminal', size: [660, 420], fav: 1, svg: '<polyline points="5 8 10 12 5 16"/><line x1="12" y1="17" x2="19" y2="17"/>' },
+  notes: { name: 'Notes', size: [520, 440], fav: 1, svg: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/>' },
+  calc: { name: 'Calc', size: [330, 500], svg: '<rect x="5" y="3" width="14" height="18" rx="2"/><line x1="8" y1="7.5" x2="16" y2="7.5"/>' },
+  clock: { name: 'Clock', size: [420, 520], svg: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>' },
+  settings: { name: 'Settings', size: [500, 520], fav: 1, svg: '<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/>' },
+  music: { name: 'Music', size: [520, 620], fav: 1, svg: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>' },
+  phone: { name: 'Phone', size: [580, 640], fav: 1, svg: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>' }
 };
+const svgOf = k => '<svg viewBox="0 0 24 24" aria-hidden="true">' + APPS[k].svg + '</svg>';
+const iconSpan = (k, cls) => {
+  const a = APPS[k];
+  return h('span', { class: cls, style: a.img ? { backgroundImage: 'url("' + a.img + '")' } : { background: 'linear-gradient(145deg,#5b4bdb,#2a1f78)' }, html: a.img ? '' : svgOf(k) });
+};
+const icon = k => iconSpan(k, 'ic');
 
-/* ---------- window manager ---------- */
 const desk = $('#desk'), winsEl = $('#wins');
 const procs = new Map();
 let uid = 0, nextPid = 100, zTop = 10, front = null;
@@ -259,12 +184,6 @@ const ICO = {
   max: '<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>',
   x: '<svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>'
 };
-
-const iconSpan = (k, cls) => {
-  const a = APPS[k];
-  return h('span', { class: cls, style: a.img ? { backgroundImage: 'url("' + a.img + '")' } : { background: a.grad }, html: a.img ? '' : svgOf(k) });
-};
-const icon = k => iconSpan(k, 'ic');
 
 function openApp(appId, arg) {
   const app = APPS[appId];
@@ -281,13 +200,12 @@ function openApp(appId, arg) {
   w.body = h('div', { class: 'wb' });
   const tb = h('div', { class: 'tb' },
     iconSpan(appId, 'tic'), ttl,
-    h('button', { class: 'mn', 'aria-label': 'Minimize', html: ICO.min, onclick: () => minimize(id) }),
-    h('button', { class: 'mx', 'aria-label': 'Maximize', html: ICO.max, onclick: () => toggleMax(id) }),
-    h('button', { class: 'x', 'aria-label': 'Close', html: ICO.x, onclick: () => close(id) }));
-  const rz = h('div', { class: 'rz' });
-  w.el = h('section', { class: 'win', 'aria-label': app.name }, tb, w.body, rz);
+    h('button', { class: 'mn', html: ICO.min, onclick: () => minimize(id) }),
+    h('button', { class: 'mx', html: ICO.max, onclick: () => toggleMax(id) }),
+    h('button', { class: 'x', html: ICO.x, onclick: () => close(id) }));
+  w.el = h('section', { class: 'win' }, tb, w.body);
   w.el.addEventListener('pointerdown', () => { if (front !== id || w.min) focus(id); }, true);
-  dragify(w, tb); resizify(w, rz); place(w);
+  place(w);
   winsEl.append(w.el);
   procs.set(id, w);
   try { w.api = (WIN_APPS[appId](w.body, w, arg)) || {}; } catch (e) { console.error(e); w.body.textContent = 'App crashed: ' + e.message; }
@@ -295,27 +213,6 @@ function openApp(appId, arg) {
   return w;
 }
 function place(w) { const s = w.el.style; s.left = w.x + 'px'; s.top = w.y + 'px'; s.width = w.w + 'px'; s.height = w.h + 'px'; }
-function dragify(w, tb) {
-  tb.addEventListener('pointerdown', e => {
-    if (w.max || e.target.closest('button')) return;
-    const sx = e.clientX, sy = e.clientY, ox = w.x, oy = w.y;
-    tb.setPointerCapture(e.pointerId);
-    const mv = ev => { w.x = clamp(ox + ev.clientX - sx, 80 - w.w, desk.clientWidth - 80); w.y = clamp(oy + ev.clientY - sy, 0, desk.clientHeight - 44); place(w); };
-    const up = () => { tb.removeEventListener('pointermove', mv); tb.removeEventListener('pointerup', up); };
-    tb.addEventListener('pointermove', mv); tb.addEventListener('pointerup', up);
-  });
-}
-function resizify(w, rz) {
-  rz.addEventListener('pointerdown', e => {
-    if (w.max) return;
-    e.preventDefault(); e.stopPropagation(); focus(w.id);
-    const sx = e.clientX, sy = e.clientY, ow = w.w, oh = w.h;
-    rz.setPointerCapture(e.pointerId);
-    const mv = ev => { w.w = clamp(ow + ev.clientX - sx, 300, desk.clientWidth - w.x); w.h = clamp(oh + ev.clientY - sy, 200, desk.clientHeight - w.y); place(w); };
-    const up = () => { rz.removeEventListener('pointermove', mv); rz.removeEventListener('pointerup', up); };
-    rz.addEventListener('pointermove', mv); rz.addEventListener('pointerup', up);
-  });
-}
 function focus(id) {
   const w = procs.get(id); if (!w) return;
   w.min = false; w.z = ++zTop; w.el.style.zIndex = w.z; front = id; render();
@@ -333,125 +230,85 @@ function close(id) {
 function render() {
   for (const w of procs.values()) {
     w.el.classList.toggle('min', w.min);
-    w.el.classList.toggle('focused', w.id === front && !w.min);
   }
   const fw = front && procs.get(front);
   $('#ftitle').textContent = fw && !fw.min ? APPS[fw.appId].name : '';
-  for (const b of $('#dock').children) {
-    const ws = [...procs.values()].filter(w => w.appId === b.dataset.app);
-    b.classList.toggle('running', ws.length > 0);
-  }
-}
-function dockClick(appId) {
-  const ws = [...procs.values()].filter(w => w.appId === appId);
-  if (!ws.length) return openApp(appId);
-  const w = ws[0];
-  if (front === w.id && !w.min) minimize(w.id); else focus(w.id);
 }
 
-/* ---------- apps ---------- */
 const WIN_APPS = {};
 
-/* Terminal */
 WIN_APPS.terminal = (body, w) => {
-  let cwd = '/home/user';
   const out = h('div', { class: 't-out' });
-  const prompt = h('span', { class: 't-ps' }, 'user@esmu:~$ ');
-  const inp = h('input', { class: 't-in', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', 'aria-label': 'Command' });
-  const wrap = h('div', { class: 'term ar' }, out, h('label', { class: 't-row' }, prompt, inp));
+  const inp = h('input', { class: 't-in', style: 'flex:1;background:none;border:0;color:inherit;outline:none;', autocomplete: 'off' });
+  const wrap = h('div', { class: 'term' }, out, h('div', { style: 'display:flex;' }, h('span', { style: 'color:var(--accent)' }, '> '), inp));
   body.append(wrap);
-  const print = (t, cls) => {
-    const line = h('div', { class: cls || '' });
-    line.append(String(t));
-    out.append(line); wrap.scrollTop = wrap.scrollHeight;
-  };
-  print('ESMU SHELL 1.0', 't-key');
-  print('Type help for commands.', 't-dim');
+  const print = (t) => { out.append(h('div', null, t)); wrap.scrollTop = wrap.scrollHeight; };
+  print('ESMU SHELL 1.0\nType help for commands.');
   const cmds = {
-    help() { return 'Commands: help ls pwd cd cat echo clear date whoami uname uptime free ps phone neofetch music'; },
-    ls(a) { return 'welcome.txt\nnotes.txt\nDocuments/'; },
-    pwd() { return cwd; },
-    cd(a) { if (a) cwd = a; return ''; },
-    cat(a) { return 'File: ' + (a || '?') + '\n(empty in this minimal version)'; },
+    help() { return 'help ls pwd echo date whoami uname ps phone neofetch music clear'; },
+    ls() { return 'welcome.txt\nnotes.txt\nDocuments/'; },
+    pwd() { return '/home/user'; },
     echo(a) { return a.join(' '); },
     clear() { out.textContent = ''; return ''; },
     date() { return new Date().toString(); },
     whoami() { return 'user'; },
     uname() { return 'Esmu 1.0 esmu-kernel'; },
-    uptime() { return 'up ' + Math.floor((Date.now() - sys.start) / 1000) + 's'; },
-    free() { return 'Mem: 2048 MB total'; },
     ps() { return [...procs.values()].map(w => w.pid + ' ' + APPS[w.appId].name).join('\n') || 'PID NAME'; },
     async phone(a) {
       if (!NATIVE) throw new Error('only in Android app');
       const sub = a[0] || 'info';
-      if (sub === 'info') { const d = await nat.call('device.info'); return d.manufacturer + ' ' + d.model + '\nAndroid ' + d.android + ' (API ' + d.sdk + ')\nBattery: ' + d.battery.level + '%'; }
-      if (sub === 'apps') { const r = await nat.call('apps.list', { icons: false }); return r.items.map(x => x.label + ' (' + x.pkg + ')').join('\n'); }
+      if (sub === 'info') { const d = await nat.call('device.info'); return d.manufacturer + ' ' + d.model + '\nBattery: ' + d.battery.level + '%'; }
+      if (sub === 'apps') { const r = await nat.call('apps.list', { icons: false }); return r.items.map(x => x.label).join('\n'); }
       if (sub === 'ls') { const r = await nat.call('fs.list', { path: a[1] || '' }); return r.items.map(x => (x.dir ? 'd ' : '- ') + x.name).join('\n'); }
       if (sub === 'contacts') { const r = await nat.call('contacts.list', { limit: 50 }); return r.items.map(c => c.name + ' ' + c.number).join('\n'); }
       return 'phone info | apps | ls [path] | contacts';
     },
-    neofetch() {
-      return '  ESMU OS\n  ------\n  OS: Esmu 1.0\n  Kernel: esmu-kernel 1.0\n  Shell: lsh\n  Display: ' + innerWidth + 'x' + innerHeight + '\n  Apps: ' + Object.keys(APPS).length + '\n  Native: ' + (NATIVE ? 'yes' : 'no');
-    },
+    neofetch() { return '  ESMU OS\n  -------\n  Apps: ' + Object.keys(APPS).length + '\n  Native: ' + (NATIVE ? 'yes' : 'no'); },
     music() { openApp('music'); return ''; }
   };
   async function run(line) {
-    print('user@esmu:' + cwd + '$ ' + line, 't-cmd');
+    print('> ' + line);
     const parts = line.trim().split(/\s+/), cmd = parts[0], args = parts.slice(1);
     if (!cmd) return;
     if (cmds[cmd]) {
-      try { const r = await cmds[cmd](args); if (r) print(r); } catch (e) { print(cmd + ': ' + e.message, 't-err'); }
-    } else print(cmd + ': command not found (try help)', 't-err');
+      try { const r = await cmds[cmd](args); if (r) print(r); } catch (e) { print(cmd + ': ' + e.message); }
+    } else print(cmd + ': command not found');
   }
-  inp.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { const l = inp.value; inp.value = ''; run(l); }
-  });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const l = inp.value; inp.value = ''; run(l); } });
   setTimeout(() => inp.focus(), 30);
   return { onFocus() { inp.focus(); } };
 };
 
-/* Music */
 WIN_APPS.music = (body, w) => {
   let tracks = [], idx = -1, playing = false, curUri = null, curDur = 0;
-  const listEl = h('div', { class: 'f-list' });
-  const nowEl = h('div', { class: 's-note' }, 'Nothing playing');
+  const listEl = h('div', { style: 'flex:1;overflow:auto;' });
+  const nowEl = h('div', { style: 'padding:10px;text-align:center;font-weight:600' }, 'Nothing playing');
   const playBtn = h('button', { class: 'btn pri', onclick: toggle }, 'Play');
   const stopBtn = h('button', { class: 'btn', onclick: stop }, 'Stop');
   const nextBtn = h('button', { class: 'btn', onclick: () => step(1) }, 'Next');
   const prevBtn = h('button', { class: 'btn', onclick: () => step(-1) }, 'Prev');
-  const search = h('input', { class: 's-in', type: 'search', placeholder: 'Search songs', oninput: () => draw() });
-  const seek = h('input', { type: 'range', min: '0', max: '1000', value: '0', style: { width: '100%' }, oninput: () => { const ms = Math.floor(seek.value / 1000 * curDur); nat.call('music.seek', { ms }).catch(() => {}); } });
-  body.append(h('div', { class: 'ar' }, h('div', { class: 's-sec', style: { flex: 'none' } },
-    h('h3', null, 'Music'), search,
-    h('div', { style: { display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' } }, prevBtn, playBtn, nextBtn, stopBtn),
-    nowEl, seek
-  ), listEl));
-  const fmtMs = ms => { const s = Math.floor(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  body.append(h('div', { style: 'display:flex;flex-direction:column;height:100%' }, 
+    h('div', { style: 'display:flex;justify-content:center;gap:8px;padding:12px;' }, prevBtn, playBtn, nextBtn, stopBtn),
+    nowEl, listEl));
+  
   async function load() {
-    if (!NATIVE) { listEl.replaceChildren(h('div', { class: 'empty' }, 'Music only works inside the Esmu OS Android app.')); return; }
-    listEl.replaceChildren(h('div', { class: 'empty' }, 'Reading your music…'));
+    if (!NATIVE) { listEl.append(h('div', { class: 'empty' }, 'Music only works inside Android app.')); return; }
+    listEl.replaceChildren(h('div', { class: 'empty' }, 'Reading music…'));
     try {
       const r = await nat.call('music.list', {});
       tracks = r.items || [];
-      if (!tracks.length) { listEl.replaceChildren(h('div', { class: 'empty' }, 'No music found on this phone.')); return; }
+      if (!tracks.length) { listEl.replaceChildren(h('div', { class: 'empty' }, 'No music found.')); return; }
       draw();
-    } catch (e) {
-      listEl.replaceChildren(h('div', { class: 'empty' }, 'Could not read music: ' + e.message));
-    }
+    } catch (e) { listEl.replaceChildren(h('div', { class: 'empty' }, 'Error: ' + e.message)); }
   }
   function draw() {
-    const q = search.value.trim().toLowerCase();
-    const hits = tracks.filter(t => !q || t.title.toLowerCase().includes(q) || t.artist.toLowerCase().includes(q));
-    listEl.replaceChildren(...hits.map(t => h('div', { class: 'f-row' },
-      h('button', { class: 'f-main', onclick: () => playAt(tracks.indexOf(t)) },
-        h('span', { class: 'f-ic', style: { background: '#8b5cf6' }, html: '<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>' }),
-        h('span', { class: 'f-nm' }, t.title),
-        h('span', { class: 'f-mt' }, t.artist + ' · ' + fmtMs(t.duration))))));
+    listEl.replaceChildren(...tracks.map(t => h('button', { class: 'f-row', style: 'width:100%;', onclick: () => playAt(tracks.indexOf(t)) },
+        h('div', { class: 'f-main' }, h('div', null, t.title), h('div', { style: 'font-size:12px;color:var(--muted)' }, t.artist)))));
   }
   async function playAt(i) {
     if (i < 0 || i >= tracks.length) return;
     idx = i; const t = tracks[i]; curUri = t.uri; curDur = t.duration || 0;
-    nowEl.textContent = '▶ ' + t.title + ' — ' + t.artist;
+    nowEl.textContent = '▶ ' + t.title;
     try { await nat.call('music.play', { uri: t.uri }); playing = true; playBtn.textContent = 'Pause'; }
     catch (e) { toast('Could not play: ' + e.message); }
   }
@@ -462,28 +319,19 @@ WIN_APPS.music = (body, w) => {
       else { await nat.call('music.resume', {}); playing = true; playBtn.textContent = 'Pause'; }
     } catch (e) { toast(e.message); }
   }
-  async function stop() { try { await nat.call('music.stop', {}); } catch (e) {} playing = false; curUri = null; idx = -1; nowEl.textContent = 'Nothing playing'; playBtn.textContent = 'Play'; }
+  async function stop() { try { await nat.call('music.stop', {}); } catch (e) {} playing = false; curUri = null; nowEl.textContent = 'Nothing playing'; playBtn.textContent = 'Play'; }
   async function step(d) { if (!tracks.length) return; playAt((idx + d + tracks.length) % tracks.length); }
-  const iv = setInterval(async () => {
-    if (!curUri || !playing) return;
-    try {
-      const p = await nat.call('music.position', {});
-      if (curDur) seek.value = String(Math.floor(p.position / curDur * 1000));
-    } catch (e) {}
-  }, 1000);
   load();
-  return { destroy() { clearInterval(iv); nat.call('music.stop', {}).catch(() => {}); } };
+  return { destroy() { nat.call('music.stop', {}).catch(() => {}); } };
 };
 
-/* Phone */
 WIN_APPS.phone = (body, w) => {
   let tab = 'device', alive = true, stream = null, fsPath = '', facing = 'environment', appsCache = null;
-  const panel = h('div', { class: 'ph-panel' });
+  const panel = h('div', { style: 'flex:1;overflow:auto;' });
   const TABS = [['device', 'Device'], ['files', 'Files'], ['apps', 'Apps'], ['contacts', 'Contacts'], ['camera', 'Camera'], ['tools', 'Tools']];
-  const seg = h('div', { class: 'seg' }, TABS.map(([k, l]) => h('button', { 'data-t': k, 'aria-pressed': String(k === tab), onclick: () => show(k) }, l)));
-  body.append(h('div', { class: 'ar' }, h('div', { class: 'ph-top' }, seg), panel));
+  const seg = h('div', { class: 'seg', style: 'margin:8px;overflow-x:auto' }, TABS.map(([k, l]) => h('button', { 'data-t': k, 'aria-pressed': String(k === tab), onclick: () => show(k) }, l)));
+  body.append(h('div', { style: 'display:flex;flex-direction:column;height:100%' }, seg, panel));
   const fail = e => toast(e && e.message ? e.message : String(e));
-  const hs = n => n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(1) + ' KB' : n < 1073741824 ? (n / 1048576).toFixed(1) + ' MB' : (n / 1073741824).toFixed(1) + ' GB';
   const loading = t => panel.replaceChildren(h('div', { class: 'empty' }, t));
   const here = k => alive && tab === k;
   function stopCam() { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } }
@@ -493,22 +341,20 @@ WIN_APPS.phone = (body, w) => {
     ({ device: pDevice, files: pFiles, apps: pApps, contacts: pContacts, camera: pCamera, tools: pTools })[k]();
   }
   async function ask(k) {
-    try { const r = await nat.call('perm.request', { name: k }); if (r.pending) toast(r.note || 'Allow it in Android settings, then come back.'); } catch (e) { fail(e); }
+    try { const r = await nat.call('perm.request', { name: k }); if (r.pending) toast(r.note || 'Allow it in settings'); } catch (e) { fail(e); }
     show(tab);
   }
-  const allowBox = (msg, perm) => h('div', { class: 'empty' }, h('p', null, msg), h('button', { class: 'btn pri', onclick: () => ask(perm) }, 'Allow'));
 
   async function pDevice() {
-    loading('Reading your phone…');
+    loading('Reading…');
     try {
       const [d, st] = await Promise.all([nat.call('device.info'), nat.call('perm.status')]);
       if (!here('device')) return;
-      const rows = [['Device', d.manufacturer + ' ' + d.model], ['Android', d.android + ' (API ' + d.sdk + ')'], ['Battery', d.battery.level + '%' + (d.battery.charging ? ', charging' : '')], ['Storage', hs(d.freeBytes) + ' free of ' + hs(d.totalBytes)]];
-      const PERMS = [['storage', 'Phone files (all files access)'], ['camera', 'Camera'], ['mic', 'Microphone'], ['location', 'Location'], ['contacts', 'Contacts'], ['notifications', 'Notifications'], ['music', 'Music library']];
+      const PERMS = [['storage', 'Files'], ['camera', 'Camera'], ['contacts', 'Contacts'], ['music', 'Music']];
       panel.replaceChildren(
-        h('div', { class: 's-sec' }, h('h3', null, 'This phone'), h('dl', { class: 'info' }, rows.map(([k, v]) => [h('dt', null, k), h('dd', null, v)]))),
-        h('div', { class: 's-sec' }, h('h3', null, 'Access'), PERMS.map(([k, l]) => h('div', { class: 'ph-perm' }, h('span', null, l), st[k] ? h('b', { class: 'ph-ok' }, 'Allowed') : h('button', { class: 'btn pri', onclick: () => ask(k) }, 'Allow')))));
-    } catch (e) { if (here('device')) panel.replaceChildren(h('div', { class: 'empty' }, 'Could not read phone: ' + e.message)); }
+        h('div', { class: 's-sec' }, h('h3', null, 'System'), h('div', null, d.manufacturer + ' ' + d.model), h('div', null, 'Battery: ' + d.battery.level + '%')),
+        h('div', { class: 's-sec' }, h('h3', null, 'Permissions'), PERMS.map(([k, l]) => h('div', { class: 'ph-perm' }, h('span', null, l), st[k] ? h('b', { class: 'ph-ok' }, 'Allowed') : h('button', { class: 'btn pri', onclick: () => ask(k) }, 'Allow')))));
+    } catch (e) { if (here('device')) panel.replaceChildren(h('div', { class: 'empty' }, e.message)); }
   }
 
   async function pFiles() {
@@ -518,237 +364,107 @@ WIN_APPS.phone = (body, w) => {
       if (!here('files')) return;
       fsPath = r.path;
       const join = n => r.path + '/' + n;
-      const quick = [['Download', 'Download'], ['Pictures', 'Pictures'], ['DCIM', 'DCIM'], ['Documents', 'Documents'], ['Phone', '']];
-      const row = it => h('div', { class: 'f-row' },
-        h('button', { class: 'f-main', onclick: () => { if (it.dir) { fsPath = join(it.name); pFiles(); } } },
-          h('span', { class: 'f-ic', style: { background: it.dir ? '#e09a1c' : '#5b6bd6' }, html: '<svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>' }),
-          h('span', { class: 'f-nm' }, it.name), h('span', { class: 'f-mt' }, it.dir ? '' : hs(it.size))));
       panel.replaceChildren(
-        h('div', { class: 'chips' }, quick.map(([l, p]) => h('button', { class: 'chip', onclick: () => { fsPath = p; pFiles(); } }, l))),
-        h('div', { class: 'f-top' },
-          h('button', { class: 'btn', disabled: r.path === r.root, onclick: () => { fsPath = r.path.replace(/\/[^/]+$/, '') || r.root; pFiles(); } }, 'Up'),
-          h('div', { class: 'f-path' }, r.path || '/')),
-        r.items.length ? h('div', { class: 'f-list' }, r.items.map(row)) : h('div', { class: 'empty' }, 'Empty folder.'));
-    } catch (e) {
-      if (!here('files')) return;
-      panel.replaceChildren(/permission/i.test(e.message) ? allowBox(e.message, 'storage') : h('div', { class: 'empty' }, h('p', null, e.message), h('button', { class: 'btn', onclick: () => { fsPath = ''; pFiles(); } }, 'Go to phone storage')));
-    }
+        h('div', { style: 'padding:8px' }, h('button', { class: 'btn', onclick: () => { fsPath = r.path.replace(/\/[^/]+$/, '') || r.root; pFiles(); } }, 'Up')),
+        r.items.length ? h('div', null, r.items.map(it => h('button', { class: 'f-row', style: 'width:100%', onclick: () => { if (it.dir) { fsPath = join(it.name); pFiles(); } } }, h('div', { class: 'f-main' }, it.name)))) : h('div', { class: 'empty' }, 'Empty folder.'));
+    } catch (e) { panel.replaceChildren(h('div', { class: 'empty' }, e.message)); }
   }
 
-  const letterIcon = name => '<svg viewBox="0 0 24 24"><text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">' + String(name[0] || '?').toUpperCase() + '</text></svg>';
   async function pApps() {
-    loading('Reading your apps…');
+    loading('Reading apps…');
     try {
       if (!appsCache) appsCache = (await nat.call('apps.list', { icons: true })).items;
       if (!here('apps')) return;
-      const grid = h('div', { class: 'ph-grid' });
-      const draw = q => {
-        const f = q.trim().toLowerCase();
-        grid.replaceChildren(...appsCache.filter(a => !f || a.label.toLowerCase().includes(f) || a.pkg.includes(f)).map(a =>
-          h('button', { class: 'app ph-app', title: a.pkg, onclick: () => nat.call('apps.launch', { pkg: a.pkg }).catch(fail) },
-            h('span', { class: 'ic', style: a.icon ? { backgroundImage: 'url("' + a.icon + '")' } : { background: 'linear-gradient(145deg,#6366f1,#4338ca)' }, html: a.icon ? '' : letterIcon(a.label) }),
-            h('span', null, a.label))));
-      };
-      const search = h('input', { class: 's-in', type: 'search', placeholder: 'Search ' + appsCache.length + ' apps', oninput: () => draw(search.value) });
-      panel.replaceChildren(h('div', { class: 's-sec' }, search), grid);
-      draw('');
-    } catch (e) { if (here('apps')) panel.replaceChildren(h('div', { class: 'empty' }, 'Could not read apps: ' + e.message)); }
+      panel.replaceChildren(h('div', { class: 'ph-grid' }, appsCache.map(a => h('button', { onclick: () => nat.call('apps.launch', { pkg: a.pkg }) }, h('div', { style: 'text-align:center;font-size:12px;padding:8px; color:white' }, a.label)))));
+    } catch (e) { panel.replaceChildren(h('div', { class: 'empty' }, e.message)); }
   }
 
   async function pContacts() {
-    const list = h('div', { class: 'f-list' });
-    const search = h('input', { class: 's-in', type: 'search', placeholder: 'Search contacts', oninput: () => { clearTimeout(pContacts.t); pContacts.t = setTimeout(load, 250); } });
-    async function load() {
-      try {
-        const r = await nat.call('contacts.list', { query: search.value.trim(), limit: 200 });
-        if (!here('contacts')) return;
-        list.replaceChildren(...(r.items.length ? r.items.map(c => h('div', { class: 'f-row' },
-          h('div', { class: 'f-main' }, h('span', { class: 'f-nm' }, c.name), h('span', { class: 'f-mt' }, c.number)),
-          h('button', { class: 'ib', html: '<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>', onclick: () => nat.call('open.url', { url: 'tel:' + c.number }).catch(fail) })))
-          : [h('div', { class: 'empty' }, 'No contacts.')]));
-      } catch (e) { if (here('contacts')) list.replaceChildren(/permission/i.test(e.message) ? allowBox(e.message, 'contacts') : h('div', { class: 'empty' }, e.message)); }
-    }
-    panel.replaceChildren(h('div', { class: 's-sec' }, search), list);
-    load();
+    loading('Reading contacts…');
+    try {
+      const r = await nat.call('contacts.list', { limit: 100 });
+      if (!here('contacts')) return;
+      panel.replaceChildren(h('div', null, r.items.map(c => h('div', { class: 'f-row' }, h('div', { class: 'f-main' }, c.name + ' - ' + c.number)))));
+    } catch (e) { panel.replaceChildren(h('div', { class: 'empty' }, e.message)); }
   }
 
   async function pCamera() {
     const v = h('video', { class: 'ph-video', autoplay: true, playsinline: true });
     v.muted = true;
-    const shot = h('img', { class: 'ph-shot', hidden: true });
     const snap = async () => {
-      if (!stream || !v.videoWidth) { toast('Camera not ready'); return; }
+      if (!stream) return;
       const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0);
-      const url = c.toDataURL('image/jpeg', .92), name = 'IMG_' + new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14) + '.jpg';
-      shot.src = url; shot.hidden = false;
-      try { await nat.call('fs.writeBase64', { path: 'Pictures/Esmu/' + name, base64: url.split(',')[1] }); toast('Saved: Pictures/Esmu/' + name); } catch (e) { fail(e); }
+      try { await nat.call('fs.writeBase64', { path: 'Pictures/Esmu/IMG_' + Date.now() + '.jpg', base64: c.toDataURL('image/jpeg').split(',')[1] }); toast('Saved photo'); } catch (e) { fail(e); }
     };
-    panel.replaceChildren(h('div', { class: 's-sec' }, v,
-      h('div', { style: { display: 'flex', gap: '8px', margin: '12px 0' } }, h('button', { class: 'btn pri', onclick: snap }, 'Take photo'), h('button', { class: 'btn', onclick: () => { facing = facing === 'environment' ? 'user' : 'environment'; pCamera(); } }, 'Flip')),
-      shot));
+    panel.replaceChildren(h('div', null, v, h('div', { style: 'padding:10px' }, h('button', { class: 'btn pri', onclick: snap }, 'Take photo'))));
     try {
       stopCam();
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false });
       if (!here('camera')) { stopCam(); return; }
-      v.srcObject = stream; v.play().catch(() => {});
-    } catch (e) { if (here('camera')) panel.append(h('div', { class: 'empty' }, 'Camera: ' + (e && e.message ? e.message : e))); }
+      v.srcObject = stream;
+    } catch (e) { panel.append(h('div', { class: 'empty' }, 'Camera: ' + e.message)); }
   }
 
   function pTools() {
-    const out = h('div', { class: 's-note' });
-    const loc = async () => {
-      out.textContent = 'Finding you…';
-      try {
-        const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 20000 }));
-        out.textContent = 'Lat ' + pos.coords.latitude.toFixed(5) + ', Lng ' + pos.coords.longitude.toFixed(5);
-      } catch (e) { out.textContent = 'Location: ' + e.message; }
-    };
-    const nTitle = h('input', { class: 's-in', value: 'Esmu OS', placeholder: 'Title' });
-    const nText = h('input', { class: 's-in', value: 'Hello', placeholder: 'Text', style: { marginTop: '8px' } });
-    const shareT = h('input', { class: 's-in', value: 'Sent from Esmu OS' });
-    const SET = [['wifi', 'Wi-Fi'], ['bluetooth', 'Bluetooth'], ['display', 'Display'], ['sound', 'Sound'], ['battery', 'Battery'], ['location', 'Location'], ['apps', 'Apps'], ['home', 'Home']];
-    panel.replaceChildren(
-      h('div', { class: 's-sec' }, h('h3', null, 'Location'), h('button', { class: 'btn pri', onclick: loc }, 'Where am I?'), out),
-      h('div', { class: 's-sec' }, h('h3', null, 'Notification'), nTitle, nText, h('div', { style: { marginTop: '10px' } }, h('button', { class: 'btn pri', onclick: async () => { try { await nat.call('notify', { title: nTitle.value, text: nText.value }); toast('Sent'); } catch (e) { fail(e); } } }, 'Send'))),
-      h('div', { class: 's-sec' }, h('h3', null, 'Share'), shareT, h('div', { style: { marginTop: '10px' } }, h('button', { class: 'btn', onclick: () => nat.call('share', { text: shareT.value }).catch(fail) }, 'Share…'))),
-      h('div', { class: 's-sec' }, h('h3', null, 'Hardware'), h('div', { style: { display: 'flex', gap: '8px', flexWrap: 'wrap' } },
-        h('button', { class: 'btn', onclick: () => nat.call('vibrate', { ms: 80 }).catch(fail) }, 'Short buzz'),
-        h('button', { class: 'btn', onclick: () => nat.call('vibrate', { ms: 600 }).catch(fail) }, 'Long buzz'))),
-      h('div', { class: 's-sec' }, h('h3', null, 'Android settings'), h('div', { style: { display: 'flex', gap: '6px', flexWrap: 'wrap' } }, SET.map(([k, l]) => h('button', { class: 'btn', onclick: () => nat.call('settings.open', { page: k }).catch(fail) }, l)))));
+    panel.replaceChildren(h('div', { class: 's-sec' }, h('h3', null, 'Tools'), h('button', { class: 'btn', onclick: () => nat.call('vibrate', { ms: 100 }).catch(fail) }, 'Vibrate'), h('button', { class: 'btn', onclick: () => nat.call('settings.open', { page: 'wifi' }).catch(fail) }, 'Wi-Fi settings')));
   }
 
-  const onVis = () => { if (!document.hidden && alive && (tab === 'device' || tab === 'files' || tab === 'contacts')) show(tab); };
-  document.addEventListener('visibilitychange', onVis);
   show('device');
-  return { destroy() { alive = false; stopCam(); document.removeEventListener('visibilitychange', onVis); } };
+  return { destroy() { alive = false; stopCam(); } };
 };
 
-/* Files */
-WIN_APPS.files = (body, w) => {
-  body.append(h('div', { class: 'ar' }, h('div', { class: 'empty' }, 'Use the Phone app to browse your real /sdcard.')));
-  return {};
-};
-
-/* Notes */
-WIN_APPS.notes = (body, w) => {
-  const ta = h('textarea', { class: 'n-ta', placeholder: 'Write here…' });
-  body.append(h('div', { class: 'ar' }, h('div', { class: 'n-bar' }, h('div', { class: 'n-path' }, 'quick note')), ta));
-  ta.value = store.get('esmu.note', '');
-  ta.addEventListener('input', () => store.set('esmu.note', ta.value));
+WIN_APPS.files = (body) => { body.append(h('div', { class: 'empty' }, 'Use Phone app to browse files.')); return {}; };
+WIN_APPS.notes = (body) => {
+  const ta = h('textarea', { style: 'flex:1;width:100%;padding:12px;background:var(--surface2);color:var(--text);border:0;outline:none;resize:none' });
+  body.append(ta); ta.value = store.get('esmu.note', ''); ta.addEventListener('input', () => store.set('esmu.note', ta.value));
   setTimeout(() => ta.focus(), 30);
   return { onFocus() { ta.focus(); } };
 };
-
-/* Calc */
-WIN_APPS.calc = (body, w) => {
+WIN_APPS.calc = (body) => {
   let expr = '';
-  const display = h('div', { style: { fontSize: '42px', textAlign: 'right', padding: '20px', fontWeight: '700' } }, '0');
-  const KEYS = ['C', '(', ')', '/', '7', '8', '9', '*', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '←', '='];
-  const keys = h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '8px', padding: '12px' } }, KEYS.map(k => h('button', { class: 'btn', style: { height: '52px', fontSize: '18px', fontWeight: '600' }, onclick: () => press(k) }, k)));
-  body.append(h('div', { class: 'ar' }, display, keys));
-  function press(k) {
-    if (k === 'C') expr = '';
-    else if (k === '←') expr = expr.slice(0, -1);
-    else if (k === '=') { try { expr = String(eval(expr)); } catch (e) { expr = 'Error'; } }
-    else expr += k;
+  const display = h('div', { style: 'font-size:42px;text-align:right;padding:20px;font-weight:700' }, '0');
+  const keys = h('div', { style: 'display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px' }, ['C','(',')','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','←','='].map(k => h('button', { class: 'btn', style: 'height:52px;font-size:18px', onclick: () => {
+    if (k === 'C') expr = ''; else if (k === '←') expr = expr.slice(0, -1); else if (k === '=') { try { expr = String(eval(expr)); } catch (e) { expr = 'Error'; } } else expr += k;
     display.textContent = expr || '0';
-  }
+  } }, k)));
+  body.append(h('div', { style: 'flex:1;display:flex;flex-direction:column' }, display, keys));
   return {};
 };
-
-/* Clock */
-WIN_APPS.clock = (body, w) => {
-  const big = h('div', { style: { fontSize: '64px', fontWeight: '700', textAlign: 'center', padding: '40px 20px' } });
-  const date = h('div', { style: { textAlign: 'center', color: 'var(--muted)', fontSize: '14px' } });
-  body.append(h('div', { class: 'ar', style: { justifyContent: 'center' } }, big, date));
-  const iv = setInterval(() => {
-    const d = new Date();
-    big.textContent = d.toLocaleTimeString();
-    date.textContent = d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
-  }, 500);
+WIN_APPS.clock = (body) => {
+  const big = h('div', { style: 'font-size:64px;font-weight:700;text-align:center;padding:40px 20px' });
+  body.append(big);
+  const iv = setInterval(() => big.textContent = new Date().toLocaleTimeString(), 500);
   return { destroy() { clearInterval(iv); } };
 };
-
-/* Monitor */
-WIN_APPS.monitor = (body, w) => {
-  const list = h('div', { style: { padding: '16px', fontSize: '14px' } });
-  body.append(h('div', { class: 'ar', style: { overflow: 'auto' } }, list));
-  const draw = () => {
-    list.replaceChildren(...[...procs.values()].map(p => h('div', { class: 'ph-perm' }, h('span', null, p.pid + ' · ' + APPS[p.appId].name), h('button', { class: 'btn', onclick: () => close(p.id) }, 'End'))));
-  };
-  draw(); setInterval(draw, 1000);
+WIN_APPS.settings = (body) => {
+  body.append(h('div', { class: 's-sec' }, h('h3', null, 'About'), h('div', null, 'Esmu OS 1.0'), h('div', null, 'Native: ' + (NATIVE ? 'Yes' : 'No'))));
   return {};
 };
 
-/* Settings */
-WIN_APPS.settings = (body, w) => {
-  const info = [
-    ['System', 'Esmu OS 1.0'],
-    ['Display', innerWidth + ' × ' + innerHeight],
-    ['Native bridge', NATIVE ? 'Connected' : 'Not available'],
-    ['Apps', Object.keys(APPS).length + ' installed']
-  ];
-  body.append(h('div', { class: 'set ar', style: { overflow: 'auto' } },
-    h('div', { class: 's-sec' }, h('h3', null, 'About'), h('dl', { class: 'info' }, info.map(([k, v]) => [h('dt', null, k), h('dd', null, v)]))),
-    h('div', { class: 's-sec' }, h('h3', null, 'Data'), h('p', { class: 's-note' }, 'Reset the local note and reload the OS.'),
-      h('button', { class: 'btn danger', onclick: async () => { if (await dlg({ title: 'Reset?', text: 'Clears the quick note only.', ok: 'Reset', danger: true })) { store.del('esmu.note'); location.reload(); } } }, 'Reset note'))));
-  return {};
-};
-
-/* Store */
-WIN_APPS.store = (body, w) => {
-  body.append(h('div', { class: 'set ar' }, h('div', { class: 's-sec' }, h('h3', null, 'Store'), h('p', { class: 's-note' }, 'Nothing to install here yet. You can add apps later.'))));
-  return {};
-};
-
-/* ---------- shell ---------- */
 const sys = { start: Date.now() };
 function buildShell() {
   const grid = $('#grid'), dock = $('#dock');
   grid.replaceChildren(...Object.keys(APPS).map(k => h('button', { class: 'app', onclick: () => openApp(k) }, icon(k), h('span', null, APPS[k].name))));
-  dock.replaceChildren(...Object.keys(APPS).filter(k => APPS[k].fav).map(k => h('button', { 'data-app': k, title: APPS[k].name, onclick: () => dockClick(k) }, icon(k), h('i', { class: 'run' }))));
+  dock.replaceChildren(...Object.keys(APPS).filter(k => APPS[k].fav).map(k => h('button', { onclick: () => openApp(k) }, icon(k))));
 }
 function updateClock() {
   const d = new Date(), t = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   $('#clock').textContent = t;
-  $('#w-time').textContent = t.replace(/\s?[AP]M$/i, '');
-  $('#w-date').textContent = d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
-  $('#w-meta').textContent = procs.size + ' app' + (procs.size === 1 ? '' : 's') + ' running';
+  $('#w-time').textContent = t;
+  $('#w-date').textContent = d.toLocaleDateString();
 }
-$('#sysbtn').addEventListener('click', () => openApp('settings'));
-setInterval(updateClock, 1000);
-updateClock();
+setInterval(updateClock, 1000); updateClock();
 
-if (NATIVE) {
-  const pollBat = () => nat.call('battery').then(b => { const el = $('#bat'); el.hidden = false; el.textContent = b.level + '%' + (b.charging ? ' ⚡' : ''); }).catch(() => {});
-  pollBat(); setInterval(pollBat, 60000);
-}
-
-/* ---------- boot ---------- */
 async function boot() {
-  const b = $('#boot'), log = $('#bootlog');
-  $('#os').hidden = true; b.hidden = false; b.classList.remove('done'); log.textContent = '';
-  const lines = [
-    'esmu-kernel 1.0.0 booting',
-    '[ok] display ' + innerWidth + 'x' + innerHeight,
-    '[ok] native bridge: ' + (NATIVE ? 'connected' : 'missing'),
-    '[ok] shell ready',
-    '[ok] all systems nominal'
-  ];
-  for (const l of lines) { log.textContent += l + '\n'; await sleep(120); }
-  await sleep(600);
+  const b = $('#boot');
+  $('#os').hidden = true; b.hidden = false; b.classList.remove('done');
+  await sleep(800);
   b.classList.add('done'); await sleep(300);
   b.hidden = true; $('#os').hidden = false;
-  sys.start = Date.now();
 }
-window.__esmuBack = () => {
-  if (!$('#modal').hidden) { $('#modal').hidden = true; return true; }
-  if (front) { minimize(front); return true; }
-  return false;
-};
+window.__esmuBack = () => { if (!$('#modal').hidden) { $('#modal').hidden = true; return true; } if (front) { minimize(front); return true; } return false; };
 if (!NATIVE) delete APPS.phone;
 buildShell();
-render();
 boot();
 })();
 </script>
